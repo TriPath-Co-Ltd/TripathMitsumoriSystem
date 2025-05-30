@@ -17,3 +17,14 @@
 export function hello(): string {
   return 'Hello Apps Script!';
 }
+
+// 特定図形を取得する関数
+export function getReferenceShape(
+  targetShapeName: string
+): GoogleAppsScript.Spreadsheet.Drawing | undefined {
+  // 図形オブジェクト群を取得
+  const shapes = g_activeSheet ? g_activeSheet.getDrawings() : [];
+
+  // 対象オブジェクトを検索して返却
+  return shapes.find(shape => shape.getOnAction() === targetShapeName);
+}

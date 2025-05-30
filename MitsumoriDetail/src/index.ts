@@ -14,7 +14,94 @@
  * limitations under the License.
  */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { hello } from './modules/';
 
-console.log(hello());
-console.log('test');
+import { hello, getReferenceShape } from './modules/';
+
+/* 定数 */
+// LISTシートのタイトル行数
+const COLUMN_TITLE_ROW_COUNT = 11;
+
+/* グローバル変数
+毎回取得するのは無駄なので、グローバル変数として宣言しておく
+使用しない場合もあるため、nullで初期化しておく
+*/
+
+// 自スプレッドシートファイル
+declare global {
+  export let g_spreadSheet:
+    | GoogleAppsScript.Spreadsheet.Spreadsheet
+    | undefined;
+}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(globalThis as any).g_spreadSheet = undefined;
+
+// アクティブシート
+declare global {
+  export let g_activeSheet: GoogleAppsScript.Spreadsheet.Sheet | undefined;
+}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(globalThis as any).g_activeSheet = undefined;
+
+// スプレッドシートID
+declare global {
+  export let g_spreadSheetId: string | null;
+}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(globalThis as any).g_spreadSheetId = null;
+
+/**
+ * スプレッドシートのグローバル変数を設定する
+ * スプレッドシートのID、アクティブなスプレッドシート、アクティブなシートを取得する
+ */
+function setGlobalSpreadsheetPara() {
+  // アクティブスプレッドシート取得
+  g_spreadSheet = SpreadsheetApp.getActiveSpreadsheet();
+
+  // 現在開いているスプレッドシートのシートを取得
+  g_activeSheet = SpreadsheetApp.getActiveSheet();
+  // スプレッドシートIDの取得
+  g_spreadSheetId = g_spreadSheet.getId();
+}
+
+/* 一覧シート_startボタン*/
+function List_start() {
+  // グローバル変数の設定
+  setGlobalSpreadsheetPara();
+
+  //現在のトリガを取得
+  const triggers = ScriptApp.getProjectTriggers();
+
+  // 取得したトリガの中にonEditCustomがあるかのフラグ
+  let flag = false;
+
+  // onEditCustomトリガが設定されているか確認
+  for (const v of triggers) {
+    if (v.getHandlerFunction() === 'onEditCustom') {
+      flag = true;
+    }
+  }
+
+  // onEditCustomトリガが未設定ならトリガ設定
+  if (!flag && g_spreadSheet) {
+    ScriptApp.newTrigger('onEditCustom')
+      .forSpreadsheet(g_spreadSheet)
+      .onEdit()
+      .create();
+  }
+
+  // startボタンオブジェクトを取得
+  const startButtonShape = getReferenceShape('List_start');
+
+  // 取得オブジェクトを見えない位置に移動
+  if (startButtonShape) {
+    startButtonShape.setPosition(1, 1, 2000, 0);
+  }
+
+  // グレーアウトオブジェクトを取得
+  const grayShape = getReferenceShape('List_grayout');
+
+  // グレーアウトオブジェクトを見えない位置に移動
+  if (grayShape) {
+    grayShape.setPosition(1, 1, 2000, 0);
+  }
+}

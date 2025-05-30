@@ -13,6 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export function hello() {
-  return 'Hello Apps Script!';
-}
+
+export { hello } from './example-module';

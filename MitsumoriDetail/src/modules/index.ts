@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { hello } from './example-module';
+export * from './example-module';

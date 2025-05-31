@@ -1,8 +1,13 @@
 {
   "timeZone": "Asia/Tokyo",
   "dependencies": {
-    "libraries": []
+    "enabledAdvancedServices": [{
+      "userSymbol": "BigQuery",
+      "serviceId": "bigquery",
+      "version": "v2"
+    }]
   },
   "exceptionLogging": "STACKDRIVER",
+  "oauthScopes": ["https://www.googleapis.com/auth/script.external_request", "https://www.googleapis.com/auth/forms", "https://www.googleapis.com/auth/bigquery", "https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/script.scriptapp"],
   "runtimeVersion": "V8"
 }

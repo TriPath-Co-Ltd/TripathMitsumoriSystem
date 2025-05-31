@@ -15,7 +15,13 @@
  */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { getReferenceShape } from './modules/';
+import { getReferenceShape } from './modules';
+import {
+  InputAssist,
+  inputAssistReferenceShape,
+  inputAssistSheet,
+  inputAssistType,
+} from './types';
 
 /* 定数 */
 // LISTシートのタイトル行数
@@ -165,75 +171,73 @@ function List_inputAssist() {
     }
   }
 
-  try {
-    // 入力補助のタイプを取得
-    const actionType = inputAssistByColumnName(columnTitle)?.getType;
+  // 入力補助のタイプを取得
+  const actionType = inputAssistByColumnName(columnTitle)?.getType();
 
-    // 参照表示の場合
-    if (actionType?.() === inputAssistType.referenceShape) {
-      // 対応参照図オブジェクトを取得
-      const targetShape = getReferenceShapeByColumnTitle(columnTitle);
+  // 参照表示の場合
+  if (actionType === inputAssistType.referenceShape) {
+    // 対応参照図オブジェクトを取得
+    const targetShape = getReferenceShapeByColumnTitle(columnTitle);
 
-      // 対応参照図を選択セルのそばに表示する
-      if (targetShape) {
-        targetShape.setPosition(rowIndex, columnIndex, -300, 0);
-      }
-      // 入力補助シート表示の場合
-    } else if (actionType?.() === inputAssistType.inputSheet) {
-      // 入力補助シート名取得(非表示のテンプレートシート名取得)
-      const assistInfo = inputAssistByColumnName(columnTitle);
-      const targetSheetName = assistInfo
-        ? (assistInfo as inputAssistSheet).getSheetName()
-        : undefined;
+    // 対応参照図を選択セルのそばに表示する
+    if (targetShape) {
+      targetShape.setPosition(rowIndex, columnIndex, -300, 0);
+    }
+    // 入力補助シート表示の場合
+  } else if (actionType === inputAssistType.inputSheet) {
+    // 入力補助シート名取得(非表示のテンプレートシート名取得)
+    const assistInfo = inputAssistByColumnName(columnTitle);
+    const targetSheetName = assistInfo
+      ? (assistInfo as inputAssistSheet).getSheetName()
+      : undefined;
 
-      // 入力補助シート名を行数を元に作成
-      const copySheetName =
-        String(rowIndex - COLUMN_TITLE_ROW_COUNT - 1).padStart(3, '0') +
-        '_' +
-        targetSheetName;
+    // 入力補助シート名を行数を元に作成
+    const copySheetName =
+      String(rowIndex - COLUMN_TITLE_ROW_COUNT - 1).padStart(3, '0') +
+      '_' +
+      targetSheetName;
 
-      // 入力補助シートがあるか確認
-      let copySheet = g_spreadSheet
-        ? g_spreadSheet.getSheetByName(copySheetName)
-        : null;
+    // 入力補助シートがあるか確認
+    let copySheet = g_spreadSheet
+      ? g_spreadSheet.getSheetByName(copySheetName)
+      : null;
 
-      // 入力補助シートがなければ新規作成
-      if (!copySheet) {
-        // テンプレートシートをコピー
-        if (g_spreadSheet && targetSheetName) {
-          const sheet = g_spreadSheet.getSheetByName(targetSheetName);
-          if (sheet) {
-            copySheet = sheet.copyTo(g_spreadSheet);
-          } else {
-            copySheet = null; // Explicitly handle the case where the sheet is not found
-          }
-        }
-
-        // コピーしたシートを指定入力補助シート名に変更する
-        if (copySheet) {
-          copySheet.setName(copySheetName);
+    // 入力補助シートがなければ新規作成
+    if (!copySheet) {
+      // テンプレートシートをコピー
+      if (g_spreadSheet && targetSheetName) {
+        const sheet = g_spreadSheet.getSheetByName(targetSheetName);
+        if (sheet) {
+          copySheet = sheet.copyTo(g_spreadSheet);
+        } else {
+          copySheet = null; // Explicitly handle the case where the sheet is not found
         }
       }
 
-      // コピーしたシートを表示化
+      // コピーしたシートを指定入力補助シート名に変更する
       if (copySheet) {
-        copySheet.showSheet();
-      }
-
-      // コピーしたシートをアクティブ化
-      if (copySheet) {
-        copySheet.activate();
+        copySheet.setName(copySheetName);
       }
     }
 
-    // actionTypeが取得できない→入力補助対象カラムではないと判定
-  } catch (e) {
-    // エラーが発生した場合は入力補助対象カラムではないと判断
+    // コピーしたシートを表示化
+    if (copySheet) {
+      copySheet.showSheet();
+    }
+
+    // コピーしたシートをアクティブ化
+    if (copySheet) {
+      copySheet.activate();
+    }
+  }
+  // actionTypeが取得できない場合は入力補助対象カラムではないと判断
+  else {
     if (g_ui) {
       g_ui.alert('入力補助対象セルではありません。');
     }
     return;
   }
+
   /* 
     列名から入力補助を取得する
   */

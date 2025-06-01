@@ -127,7 +127,7 @@ function List_inputAssist() {
   // 入力補助設定
   const inputAssists: Array<InputAssist> = [
     new inputAssistSheet('材料', '材料'),
-    new inputAssistReferenceShape('曲げ', 'List_referenceBending'),
+    new inputAssistReferenceShape('曲げ', 'referenceBending'),
   ];
   // グローバル変数の設定
   setGlobalSpreadsheetPara();

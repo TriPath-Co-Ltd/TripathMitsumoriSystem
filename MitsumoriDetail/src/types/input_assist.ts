@@ -43,7 +43,7 @@ export class InputAssist {
 export class inputAssistSheet extends InputAssist {
   private sheetName: string; // 入力補助のシート名
 
-  constructor(sheetName: string, columnTitle: string) {
+  constructor(columnTitle: string, sheetName: string) {
     super(inputAssistType.inputSheet, columnTitle);
     this.sheetName = sheetName;
   }
@@ -56,7 +56,7 @@ export class inputAssistSheet extends InputAssist {
 export class inputAssistReferenceShape extends InputAssist {
   private shapeName: string; // 入力補助の図形名(実際は図形のアクション名)
 
-  constructor(shapeName: string, columnTitle: string) {
+  constructor(columnTitle: string, shapeName: string) {
     super(inputAssistType.referenceShape, columnTitle);
     this.shapeName = shapeName;
   }

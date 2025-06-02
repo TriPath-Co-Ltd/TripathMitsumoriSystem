@@ -69,6 +69,15 @@ function List_start() {
   }
 }
 
+/* 一覧シート_grayoutボタン*/
+function List_grayout() {
+  const ui = SpreadsheetApp.getUi();
+  ui.alert(
+    '一覧シートは、startボタンを押してから使用してください。\n' +
+      'startボタンを押すと、入力可能になります。'
+  );
+}
+
 /* 一覧シート_入力補助ボタン*/
 function List_inputAssist() {
   // 入力補助設定

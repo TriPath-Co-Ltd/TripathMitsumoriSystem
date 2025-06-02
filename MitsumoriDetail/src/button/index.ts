@@ -16,6 +16,7 @@
 export * from './common/add_row';
 export * from './detail/cancel';
 export * from './detail/delete_sheet';
+export * from './detail/zairyo/update';
 export * from './list/start';
 export * from './list/grayout';
 export * from './list/input_assist';

@@ -19,6 +19,7 @@ import {
   addRow,
   Detail_cancel,
   Detail_deleteSheet,
+  Detail_Zairyo_update,
   List_start,
   List_grayout,
   List_inputAssist,
@@ -32,6 +33,7 @@ function dumy() {
   addRow();
   Detail_cancel();
   Detail_deleteSheet();
+  Detail_Zairyo_update();
   List_start();
   List_grayout();
   List_inputAssist();

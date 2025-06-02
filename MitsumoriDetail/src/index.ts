@@ -24,63 +24,13 @@ import {
   inputAssistType,
 } from './types';
 
-/* グローバル変数
-毎回取得するのは無駄なので、グローバル変数として宣言しておく
-使用しない場合もあるため、nullで初期化しておく
-*/
-
-// 自スプレッドシートファイル
-declare global {
-  export let g_spreadSheet:
-    | GoogleAppsScript.Spreadsheet.Spreadsheet
-    | undefined;
-}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-(globalThis as any).g_spreadSheet = undefined;
-
-// アクティブシート
-declare global {
-  export let g_activeSheet: GoogleAppsScript.Spreadsheet.Sheet | undefined;
-}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-(globalThis as any).g_activeSheet = undefined;
-
-// スプレッドシートID
-declare global {
-  export let g_spreadSheetId: string | null;
-}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-(globalThis as any).g_spreadSheetId = null;
-
-// UIオブジェクト
-declare global {
-  export let g_ui: GoogleAppsScript.Base.Ui | null;
-}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-(globalThis as any).g_ui = null;
-
-/**
- * スプレッドシートのグローバル変数を設定する
- * スプレッドシートのID、アクティブなスプレッドシート、アクティブなシートを取得する
- */
-function setGlobalSpreadsheetPara() {
-  // アクティブスプレッドシート取得
-  g_spreadSheet = SpreadsheetApp.getActiveSpreadsheet();
-
-  // 現在開いているスプレッドシートのシートを取得
-  g_activeSheet = SpreadsheetApp.getActiveSheet();
-
-  // スプレッドシートIDの取得
-  g_spreadSheetId = g_spreadSheet.getId();
-  // UIオブジェクトの取得
-  g_ui = SpreadsheetApp.getUi();
-}
-
 /* 一覧シート_startボタン*/
 function List_start() {
-  // グローバル変数の設定
-  setGlobalSpreadsheetPara();
+  // アクティブスプレッドシート取得
+  const spreadSheet = SpreadsheetApp.getActiveSpreadsheet();
 
+  // 現在開いているスプレッドシートのシートを取得
+  const activeSheet = SpreadsheetApp.getActiveSheet();
   //現在のトリガを取得
   const triggers = ScriptApp.getProjectTriggers();
 
@@ -95,15 +45,15 @@ function List_start() {
   }
 
   // onEditCustomトリガが未設定ならトリガ設定
-  if (!flag && g_spreadSheet) {
+  if (!flag && spreadSheet) {
     ScriptApp.newTrigger('onEditCustom')
-      .forSpreadsheet(g_spreadSheet)
+      .forSpreadsheet(spreadSheet)
       .onEdit()
       .create();
   }
 
   // startボタンオブジェクトを取得
-  const startButtonShape = getReferenceShape('List_start');
+  const startButtonShape = getReferenceShape(activeSheet, 'List_start');
 
   // 取得オブジェクトを見えない位置に移動
   if (startButtonShape) {
@@ -111,7 +61,7 @@ function List_start() {
   }
 
   // グレーアウトオブジェクトを取得
-  const grayShape = getReferenceShape('List_grayout');
+  const grayShape = getReferenceShape(activeSheet, 'List_grayout');
 
   // グレーアウトオブジェクトを見えない位置に移動
   if (grayShape) {
@@ -126,21 +76,25 @@ function List_inputAssist() {
     new inputAssistSheet('材料', '材料'),
     new inputAssistReferenceShape('曲げ', 'referenceBending'),
   ];
-  // グローバル変数の設定
-  setGlobalSpreadsheetPara();
+
+  // アクティブスプレッドシート取得
+  const spreadSheet = SpreadsheetApp.getActiveSpreadsheet();
+
+  // 現在開いているスプレッドシートのシートを取得
+  const activeSheet = SpreadsheetApp.getActiveSheet();
 
   // 現在のセルを取得
-  const activeCell = g_activeSheet ? g_activeSheet.getActiveCell() : null;
+  const activeCell = activeSheet.getActiveCell();
 
   // 現在のセルの行番号取得
-  const rowIndex = activeCell ? activeCell.getRow() : null;
+  const rowIndex = activeCell.getRow();
 
   // 現在のセルの列番号取得
-  const columnIndex = activeCell ? activeCell.getColumn() : null;
+  const columnIndex = activeCell.getColumn();
 
   // 入力補助範囲をチェック(とりあえず)
   if (
-    !g_activeSheet ||
+    !activeSheet ||
     rowIndex === null ||
     columnIndex === null ||
     rowIndex < COLUMN_TITLE_ROW_COUNT
@@ -160,7 +114,7 @@ function List_inputAssist() {
     if (targetColumnIndex < 1) {
       break; // 無効な列インデックスの場合は終了
     }
-    columnTitle = g_activeSheet
+    columnTitle = activeSheet
       .getRange(COLUMN_TITLE_ROW_COUNT, targetColumnIndex)
       .getValue();
     if (columnTitle !== '') {
@@ -195,17 +149,15 @@ function List_inputAssist() {
       targetSheetName;
 
     // 入力補助シートがあるか確認
-    let copySheet = g_spreadSheet
-      ? g_spreadSheet.getSheetByName(copySheetName)
-      : null;
+    let copySheet = spreadSheet.getSheetByName(copySheetName);
 
     // 入力補助シートがなければ新規作成
     if (!copySheet) {
       // テンプレートシートをコピー
-      if (g_spreadSheet && targetSheetName) {
-        const sheet = g_spreadSheet.getSheetByName(targetSheetName);
+      if (spreadSheet && targetSheetName) {
+        const sheet = spreadSheet.getSheetByName(targetSheetName);
         if (sheet) {
-          copySheet = sheet.copyTo(g_spreadSheet);
+          copySheet = sheet.copyTo(spreadSheet);
         } else {
           copySheet = null; // Explicitly handle the case where the sheet is not found
         }
@@ -229,9 +181,8 @@ function List_inputAssist() {
   }
   // actionTypeが取得できない場合は入力補助対象カラムではないと判断
   else {
-    if (g_ui) {
-      g_ui.alert('入力補助対象セルではありません。');
-    }
+    const ui = SpreadsheetApp.getUi();
+    ui.alert('入力補助対象セルではありません。');
     return;
   }
 
@@ -252,7 +203,7 @@ function List_inputAssist() {
 
     // 対象オブジェクトを検索して返却
     return targetShapeName && typeof targetShapeName === 'string'
-      ? getReferenceShape(targetShapeName)
+      ? getReferenceShape(activeSheet, targetShapeName)
       : undefined;
   }
 }

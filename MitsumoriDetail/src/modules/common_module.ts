@@ -20,10 +20,11 @@ export function hello(): string {
 
 // 特定図形を取得する関数
 export function getReferenceShape(
+  activeSheet: GoogleAppsScript.Spreadsheet.Sheet | null,
   targetShapeName: string
 ): GoogleAppsScript.Spreadsheet.Drawing | undefined {
   // 図形オブジェクト群を取得
-  const shapes = g_activeSheet ? g_activeSheet.getDrawings() : [];
+  const shapes = activeSheet ? activeSheet.getDrawings() : [];
 
   // 対象オブジェクトを検索して返却
   return shapes.find(shape => shape.getOnAction() === targetShapeName);

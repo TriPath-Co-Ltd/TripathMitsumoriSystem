@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { LIST_SHEET_NAME } from '../constans';
-import { updateMitumoriOverviewData } from './bigquery';
+import { LIST_SHEET_NAME } from '../constans/sheet_constants';
+import { updateMitumoriOverviewData } from '../modules/bigquery';
 //import { updateMitumoriOverviewData } from './bigquery';
 
 /**

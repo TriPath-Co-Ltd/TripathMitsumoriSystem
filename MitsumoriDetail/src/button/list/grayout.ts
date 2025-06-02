@@ -13,15 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-// 特定図形を取得する関数
-export function getReferenceShape(
-  activeSheet: GoogleAppsScript.Spreadsheet.Sheet | null,
-  targetShapeName: string
-): GoogleAppsScript.Spreadsheet.Drawing | undefined {
-  // 図形オブジェクト群を取得
-  const shapes = activeSheet ? activeSheet.getDrawings() : [];
-
-  // 対象オブジェクトを検索して返却
-  return shapes.find(shape => shape.getOnAction() === targetShapeName);
+/* 一覧シート_grayoutボタン*/
+export function List_grayout() {
+  const ui = SpreadsheetApp.getUi();
+  ui.alert(
+    '一覧シートは、startボタンを押してから使用してください。\n' +
+      'startボタンを押すと、入力可能になります。'
+  );
 }

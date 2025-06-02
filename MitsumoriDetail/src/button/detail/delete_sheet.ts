@@ -14,34 +14,12 @@
  * limitations under the License.
  */
 /**
- * 詳細シートのボタン操作に関するモジュール
- */
-
-import { LIST_SHEET_NAME } from '../constans';
-
-/**
  * シート削除ボタンの処理
  */
-export function deleteSheet() {
+export function Detail_deleteSheet() {
   // 現在のアクティブスプレッドシートを取得
   const spreadSheet = SpreadsheetApp.getActiveSpreadsheet();
 
   // シートを削除
   spreadSheet.deleteActiveSheet();
-}
-
-/**
- * キャンセルボタンの処理
- */
-export function cancel() {
-  // 現在のスプレッドシートファイルを取得
-  const spreadSheet = SpreadsheetApp.getActiveSpreadsheet();
-
-  // 一覧シートを取得
-  const listSheet = spreadSheet.getSheetByName(LIST_SHEET_NAME);
-
-  // アクティブなシートが存在する場合、元のシートに戻る
-  if (listSheet) {
-    spreadSheet.setActiveSheet(listSheet);
-  }
 }

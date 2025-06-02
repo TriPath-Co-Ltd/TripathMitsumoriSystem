@@ -13,15 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { LIST_SHEET_NAME } from '../../constans/sheet_constants';
 
-// 特定図形を取得する関数
-export function getReferenceShape(
-  activeSheet: GoogleAppsScript.Spreadsheet.Sheet | null,
-  targetShapeName: string
-): GoogleAppsScript.Spreadsheet.Drawing | undefined {
-  // 図形オブジェクト群を取得
-  const shapes = activeSheet ? activeSheet.getDrawings() : [];
+/**
+ * キャンセルボタンの処理
+ */
+export function Detail_cancel() {
+  // 現在のスプレッドシートファイルを取得
+  const spreadSheet = SpreadsheetApp.getActiveSpreadsheet();
 
-  // 対象オブジェクトを検索して返却
-  return shapes.find(shape => shape.getOnAction() === targetShapeName);
+  // 一覧シートを取得
+  const listSheet = spreadSheet.getSheetByName(LIST_SHEET_NAME);
+
+  // アクティブなシートが存在する場合、元のシートに戻る
+  if (listSheet) {
+    spreadSheet.setActiveSheet(listSheet);
+  }
 }

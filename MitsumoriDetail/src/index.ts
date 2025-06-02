@@ -15,17 +15,14 @@
  */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { getReferenceShape } from './modules';
+import { COLUMN_TITLE_ROW_COUNT } from './constans';
+import { getReferenceShape, addRow } from './modules/';
 import {
   InputAssist,
   inputAssistReferenceShape,
   inputAssistSheet,
   inputAssistType,
 } from './types';
-
-/* 定数 */
-// LISTシートのタイトル行数
-const COLUMN_TITLE_ROW_COUNT = 11;
 
 /* グローバル変数
 毎回取得するのは無駄なので、グローバル変数として宣言しておく

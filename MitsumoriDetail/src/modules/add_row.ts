@@ -1,3 +1,29 @@
+/**
+ * Copyright 2025 Shoki Yamada
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { COLUMN_TITLE_ROW_COUNT } from '../constans';
+
+/**
+ * 行追加
+ * 一覧画面、材料画面、副材料画面で使用。
+ * ユーザーに追加行数(1～100行)を入力させ、指定された行数だけ空白行を追加。
+ * 1行目の非表示の入力項目をコピーし、追加行に貼り付ける。
+ * 追加行はA列の最終行の下に追加される。
+ * @returns {void}
+ */
 export function addRow() {
   // 追加行数入力ボックス
   let addRowCount = 0;
@@ -30,7 +56,10 @@ export function addRow() {
     const activeSheet = SpreadsheetApp.getActiveSheet();
 
     // A列最終行取得
-    const lastRow = activeSheet.getLastRow() - 3;
+    const lastRow = activeSheet
+      .getRange(COLUMN_TITLE_ROW_COUNT, 1)
+      .getNextDataCell(SpreadsheetApp.Direction.DOWN)
+      .getRow();
 
     // 最終列取得
     const lastCol = activeSheet.getLastColumn();

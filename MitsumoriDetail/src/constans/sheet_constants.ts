@@ -13,6 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export * from './common_module';
-export * from './add_row';
+export const COLUMN_TITLE_ROW_COUNT = 11;

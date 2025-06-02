@@ -16,7 +16,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { COLUMN_TITLE_ROW_COUNT } from './constans';
-import { getReferenceShape, addRow } from './modules/';
+import { getReferenceShape, addRow, onEditCustom } from './modules/';
 import {
   InputAssist,
   inputAssistReferenceShape,

@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export const COLUMN_TITLE_ROW_COUNT = 11;
+export const LIST_SHEET_NAME = '0.LIST';

@@ -80,7 +80,7 @@ export function openLink(id: string) {
  * @param {string} spreadName - スプレッドシート名
  * @param {string} tanto_id - 担当者ID
  */
-export function insertMitsumoriByBQ(
+export function insertMitsumori(
   spreadId: string,
   spreadName: string,
   tanto_id: string

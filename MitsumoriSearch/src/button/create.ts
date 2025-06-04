@@ -16,7 +16,7 @@
 import {
   getConfigSheet,
   getTantoNameByBQ,
-  insertMitsumoriByBQ,
+  insertMitsumori,
   openLink,
 } from '../modules/common_modules';
 import {
@@ -56,5 +56,5 @@ export function create() {
   openLink(activateMitsumoriSpreadId);
 
   // BigQuery登録
-  insertMitsumoriByBQ(activateMitsumoriSpreadId, spreadName, tanto_id);
+  insertMitsumori(activateMitsumoriSpreadId, spreadName, tanto_id);
 }

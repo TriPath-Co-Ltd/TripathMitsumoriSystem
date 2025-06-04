@@ -1,11 +1,30 @@
+/**
+ * Copyright 2025 Shoki Yamada
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import { CONFIG_SHEET_NAME } from '../constans/sheet_constants';
+// eslint-disable-next-line n/no-unpublished-import
+import { getRowBQ, insertBQ } from '../../../common_src/bigquery';
+// eslint-disable-next-line n/no-unpublished-import
+import { PROJECT_CONSTANTS } from '../../../common_src/project_constants';
 
 /**
  * 設定シートから指定されたIDの値を取得する関数
  * @param {string} id - 取得したい設定のID
  * @returns {string | null} - 指定されたIDに対応する値。存在しない場合はnullを返す。
  */
-export function getConfig(id: string) {
+export function getConfigSheet(id: string) {
   // アクティブシートのインスタンス取得
   const menuSheet = SpreadsheetApp.getActiveSpreadsheet();
   // configシートのインスタンス取得
@@ -32,4 +51,46 @@ export function getConfig(id: string) {
     return array_value[value_index];
   }
   return null;
+}
+
+// BigQueryから担当者名を取得する関数
+export function getTantoNameByBQ(tanto_id: string): string {
+  const result = getRowBQ(
+    PROJECT_CONSTANTS.BQ_TABLE_TANTO,
+    `tanto_id = '${tanto_id}'`
+  );
+  if (result.length === 0) {
+    throw new Error(`Tanto with ID ${tanto_id} not found.`);
+  }
+  return String(result[0]);
+}
+
+export function openLink(id: string) {
+  const html = HtmlService.createHtmlOutput(
+    '<script>window.open("https://docs.google.com/spreadsheets/d/' +
+      id +
+      '/edit?gid=0#gid=0"); google.script.host.close();</script>'
+  );
+  SpreadsheetApp.getUi().showModelessDialog(html, ' ');
+}
+
+/*
+ * BigQueryにデータを挿入する関数
+ * @param {string} spreadId - スプレッドシートID
+ * @param {string} spreadName - スプレッドシート名
+ * @param {string} tanto_id - 担当者ID
+ */
+export function insertMitsumoriByBQ(
+  spreadId: string,
+  spreadName: string,
+  tanto_id: string
+) {
+  const values = {
+    spread_id: spreadId,
+    spread_name: spreadName,
+    tanto_id: tanto_id,
+    created_at: new Date().toISOString(),
+  };
+  // BigQueryにデータを挿入
+  insertBQ(PROJECT_CONSTANTS.BQ_TABLE_OVERVIEW, values);
 }

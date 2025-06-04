@@ -29,6 +29,12 @@
  * limitations under the License.
  */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { hello } from './example-module';
+import { create } from './button/create';
 
-console.log(hello());
+/*
+ * ダミー関数
+ * コールしないとindex.gsに関数が生成されないのでdumy関数を記述
+ */
+function dumy() {
+  create();
+}

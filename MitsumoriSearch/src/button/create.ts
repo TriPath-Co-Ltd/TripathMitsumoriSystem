@@ -1,42 +1,41 @@
-import { getConfig } from '../modules/common_modules';
-import { getTantoName } from '../modules/bigquery'; // 追加: getTantoNameをインポート
+/**
+ * Copyright 2025 Shoki Yamada
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import {
-  LIST_SHEET_NAME,
+  getConfigSheet,
+  getTantoNameByBQ,
+  insertMitsumoriByBQ,
+  openLink,
+} from '../modules/common_modules';
+import {
   MITUMORIFOLDERID,
   MITUMORITEMPLETESPREADID,
 } from '../constans/sheet_constants';
 
-export function createEstimate_katayama() {
-  // config取得
-  const tannto_id = getConfig('tannto_id');
+export function create() {
+  // configシート取得
+  const tanto_id = String(getConfigSheet('tanto_id'));
 
-  let tannto_name = '';
-  try {
-    const result = getTantoName(tannto_id);
-    tannto_name = result && result[0] ? String(result[0]) : '';
-  } catch (e) {
-    if (e instanceof Error) {
-      console.log(e.message);
-    } else {
-      console.log(e);
-    }
+  if (!tanto_id) {
+    throw new Error('担当者IDが設定されていません。');
   }
 
-  console.log(tannto_name);
+  // 担当者名取得
+  const tanto_name = getTantoNameByBQ(tanto_id);
 
-  // // お客様名
-  // let customer = Browser.inputBox("お客様名を入力してください。");
-
-  // if (customer == "") {
-  //   customer = "お客様名無し"
-  // }
-
-  // // 件名
-  // let kenmei = Browser.inputBox("見積件名を入力してください。");
-
-  // if (kenmei == "") {
-  //   kenmei = "件名無し"
-  // }
+  console.log(tanto_name);
 
   // 見積テンプレートシートを開く
   const file = DriveApp.getFileById(MITUMORITEMPLETESPREADID);
@@ -53,21 +52,9 @@ export function createEstimate_katayama() {
   const copyFile = file.makeCopy(spreadName, folder);
   const activateMitsumoriSpreadId = copyFile.getId();
 
-  // 新規見積シート
-  const mitsumoriSpreadSheet = SpreadsheetApp.openById(
-    activateMitsumoriSpreadId
-  );
-  const mitsumoriSheet = mitsumoriSpreadSheet.getSheetByName(LIST_SHEET_NAME);
-
-  // // お客様名セット
-  // mitsumoriSheet.getRange(2,2).setValue(customer);
-
-  // // 件名セット
-  // mitsumoriSheet.getRange(3,2).setValue(kenmei);
-
   // リンクを開く
-  //openLink(g_activateMitsumoriSpreadId)
+  openLink(activateMitsumoriSpreadId);
 
   // BigQuery登録
-  //insertMitumori(g_activateMitsumoriSpreadId,spreadName,tannto_id)
+  insertMitsumoriByBQ(activateMitsumoriSpreadId, spreadName, tanto_id);
 }

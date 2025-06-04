@@ -18,7 +18,7 @@ const PROJECT_ID = 'tripath-mitsumori-test';
 // BigqueryOverViewテーブル更新
 export function updateMitumoriOverviewData(
   spread_id: string,
-  tanto_id: number, //【要修正】後でDBをstringに変更
+  tanto_id: string, //【要修正】後でDBをstringに変更
   customer: string,
   customer_tanto: string,
   kenmei: string,

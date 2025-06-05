@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 import { LIST_SHEET_NAME } from '../constans/sheet_constants';
-import { updateMitumoriOverviewData } from '../modules/bigquery';
-//import { updateMitumoriOverviewData } from './bigquery';
+import { updateMitsumori } from '../modules/common_module';
 
 /**
  * onEditイベントハンドラ
@@ -24,7 +23,10 @@ import { updateMitumoriOverviewData } from '../modules/bigquery';
  * startボタン押下時にトリガイベントとして設定される。
  * @param {GoogleAppsScript.Events.SheetsOnEdit} e - onEditイベントオブジェクト
  */
-export function onEditCustom(e: GoogleAppsScript.Events.SheetsOnEdit) {
+export function onEditCustom(e?: GoogleAppsScript.Events.SheetsOnEdit) {
+  if (!e) {
+    throw new Error('Event object is undefined.');
+  }
   const sheet = e.source.getActiveSheet();
   const range = e.range;
   const sheetname = sheet.getName();
@@ -39,7 +41,8 @@ export function onEditCustom(e: GoogleAppsScript.Events.SheetsOnEdit) {
       notation === 'B4' ||
       notation === 'B6' ||
       notation === 'B8' ||
-      notation === 'B9'
+      notation === 'B9' ||
+      notation === 'B10'
     ) {
       // BigQuery更新フラグを立てる
       updateFlag = true;
@@ -57,18 +60,19 @@ export function onEditCustom(e: GoogleAppsScript.Events.SheetsOnEdit) {
     }
     // BigQuery更新フラグが立っていれば、BigQueryに書き込み
     if (updateFlag) {
-      const customer = activeSheet.getRange('B4').getValue();
-      const kenmei = activeSheet.getRange('B6').getValue();
       const spreadSheetId = SpreadsheetApp.getActiveSpreadsheet().getId();
+      const customer = activeSheet.getRange('B4').getValue();
+      const customerTanto = activeSheet.getRange('B5').getValue();
+      const kenmei = activeSheet.getRange('B6').getValue();
 
       // BigQuery更新
-      updateMitumoriOverviewData(
+      updateMitsumori(
         spreadSheetId,
-        218,
+        '218',
         customer,
-        '',
+        customerTanto,
         kenmei,
-        totalSum
+        Number(totalSum)
       );
     }
   }

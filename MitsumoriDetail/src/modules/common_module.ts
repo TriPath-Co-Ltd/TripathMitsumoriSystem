@@ -13,6 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+// eslint-disable-next-line n/no-unpublished-import
+import { updateBQ } from '../../../common_src/bigquery';
+// eslint-disable-next-line n/no-unpublished-import
+import { PROJECT_CONSTANTS } from '../../../common_src/project_constants';
 
 // 特定図形を取得する関数
 export function getReferenceShape(
@@ -24,4 +28,38 @@ export function getReferenceShape(
 
   // 対象オブジェクトを検索して返却
   return shapes.find(shape => shape.getOnAction() === targetShapeName);
+}
+
+/**
+ * Mitsumoriの情報を更新する関数
+ * @param {string} spread_id - スプレッドシートのID
+ * @param {string} tanto_id - 担当者のID
+ * @param {string} customer - 顧客名
+ * @param {string} customer_tanto - 顧客担当者名
+ * @param {string} kenmei - 件名
+ * @param {number} totalSum - 合計金額
+ */
+export function updateMitsumori(
+  spread_id: string,
+  tanto_id: string,
+  customer: string,
+  customer_tanto: string,
+  kenmei: string,
+  totalSum: number
+) {
+  const value = {
+    tanto_id: tanto_id,
+    customer: customer,
+    customer_tanto: customer_tanto,
+    kenmei: kenmei,
+    update_datetime: new Date().toISOString(),
+    total_sum: totalSum,
+  };
+
+  // BigQueryの見積データを更新
+  updateBQ(
+    PROJECT_CONSTANTS.BQ_TABLE_OVERVIEW,
+    value,
+    `spread_id = '${spread_id}'`
+  );
 }

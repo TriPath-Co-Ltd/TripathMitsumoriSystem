@@ -1,3 +1,4 @@
+// Removed duplicate import of onEditCustom
 /**
  * Copyright 2025 Shoki Yamada
  *
@@ -14,7 +15,6 @@
  * limitations under the License.
  */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-
 import {
   addRow,
   Detail_cancel,
@@ -24,7 +24,7 @@ import {
   List_grayout,
   List_inputAssist,
 } from './button';
-
+import { onEditCustom } from './trigger/on_edit_custom';
 /*
  * ダミー関数
  * コールしないとindex.gsに関数が生成されないのでdumy関数を記述
@@ -37,4 +37,5 @@ function dumy() {
   List_start();
   List_grayout();
   List_inputAssist();
+  onEditCustom();
 }

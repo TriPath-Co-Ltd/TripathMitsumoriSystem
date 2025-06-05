@@ -55,6 +55,47 @@ export function insertBQ(
   BQquery(query);
 }
 
+/*
+ * BigQueryの指定されたテーブルのデータを更新する関数
+  * @param {string} tableName - 更新するテーブル名
+  * @param {Object} values - 更新するデータのキーと値のペア
+  * @param {string} where - WHERE句の条件
+  * @throws {Error} - BigQueryまたはBigQuery.Jobsが未定義の場合
+  * @example
+      updateBQ('your_table_name', { column1: 'value1', column2: 123 }, 'id = 1');
+ */
+export function updateBQ(
+  tableName: string,
+  values: { [key: string]: string | number | boolean },
+  where: string
+) {
+  const setClause = Object.entries(values)
+    // キーと値のペアを文字列に変換、文字列以外の場合はクォートしない
+    .map(([key, value]) => {
+      if (typeof value === 'string') {
+        return `${key} = '${value}'`;
+      } else {
+        return `${key} = ${value}`;
+      }
+    })
+    .join(', ');
+
+  const query = `
+        UPDATE \`${PROJECT_CONSTANTS.BQ_PROJECT_ID}.${PROJECT_CONSTANTS.BQ_DATABASE_ID}.${tableName}\`
+        SET ${setClause}
+        WHERE ${where}
+    `;
+
+  if (!BigQuery || !BigQuery.Jobs) {
+    throw new Error(
+      'BigQuery or BigQuery.Jobs is undefined. Please ensure BigQuery is properly initialized.'
+    );
+  }
+
+  // BigQueryにデータを更新
+  BQquery(query);
+}
+
 function BQquery( 
   query: string
 ): any {

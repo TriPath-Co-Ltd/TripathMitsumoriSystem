@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getReferenceShape } from '../../modules';
+import { getReferenceShape } from '../../modules/common_module';
 
 /* 一覧シート_startボタン*/
 export function List_start() {

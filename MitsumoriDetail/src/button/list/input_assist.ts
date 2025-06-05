@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { COLUMN_TITLE_ROW_COUNT } from '../../constans/sheet_constants';
-import { getReferenceShape } from '../../modules';
+import { getReferenceShape } from '../../modules/common_module';
 import {
   InputAssist,
   inputAssistReferenceShape,

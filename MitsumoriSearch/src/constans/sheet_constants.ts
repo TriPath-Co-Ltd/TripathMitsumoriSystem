@@ -21,3 +21,5 @@ export const MITUMORIFOLDERID = '1PfH7u4C5uOyh_NMaNHPWXooIQ17qs5RA';
 // 見積テンプレートスプレッドシートID
 export const MITUMORITEMPLETESPREADID =
   '187dIbCOfA9p-lGEzlK77NXQcLVSeIPmaHREU1fpCJOY';
+
+export const COLUMN_TITLE_ROW_COUNT = 17;

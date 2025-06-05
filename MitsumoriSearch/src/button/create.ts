@@ -24,6 +24,14 @@ import {
   MITUMORITEMPLETESPREADID,
 } from '../constans/sheet_constants';
 
+/**
+ * 見積作成ボタンの処理
+ *
+ * 担当者IDを取得し、担当者名をBigQueryから取得して、
+ * 見積テンプレートシートをコピーして新しい見積シートを作成
+ *
+ * @throws {Error} 担当者IDが設定されていない場合にエラーをスロー
+ */
 export function create() {
   // configシート取得
   const tanto_id = String(getConfigSheet('tanto_id'));

@@ -1,31 +1,19 @@
 import { PROJECT_CONSTANTS } from "./project_constants";
-
 /*
   * BigQueryから指定されたテーブルの行を取得する関数
   * @param {string} tableName - 取得するテーブル名
   * @param {string} where - WHERE句の条件
   * @returns {object[]} - 取得した行の配列
   */
-export function getRowBQ(tableName: string, where: string) {
+export function getRowBQ(tableName: string, select: String ,where: string) {
   const query = `
-        SELECT *
+        ${select}
         FROM \`${PROJECT_CONSTANTS.BQ_PROJECT_ID}.${PROJECT_CONSTANTS.BQ_DATABASE_ID}.${tableName}\`
-        WHERE ${where}
+        ${where}
     `;
  
   const queryResults = BQquery(query);
-
-  const texts: (object | undefined)[] = [];
-
-  if (queryResults.rows) {
-    queryResults.rows.forEach((row: { f: { v: object | undefined; }[]; }) => {
-      if (row.f && row.f[0]) {
-        texts.push(row.f[0].v);
-      }
-    });
-  }
-
-  return texts;
+  return queryResults.rows;
 }
 
 /*
@@ -98,7 +86,7 @@ export function updateBQ(
 
 function BQquery( 
   query: string
-): any {
+): GoogleAppsScript.BigQuery.Schema.QueryResponse {
   if (!BigQuery || !BigQuery.Jobs) {
     throw new Error(
       'BigQuery or BigQuery.Jobs is undefined. Please ensure BigQuery is properly initialized.'

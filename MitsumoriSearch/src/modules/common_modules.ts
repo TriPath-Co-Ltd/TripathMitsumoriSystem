@@ -57,12 +57,21 @@ export function getConfigSheet(id: string) {
 export function getTantoNameByBQ(tanto_id: string): string {
   const result = getRowBQ(
     PROJECT_CONSTANTS.BQ_TABLE_TANTO,
-    `tanto_id = '${tanto_id}'`
+    `SELECT tanto_name`,
+    `WHERE tanto_id = '${tanto_id}'`
   );
-  if (result.length === 0) {
-    throw new Error(`Tanto with ID ${tanto_id} not found.`);
+  // 結果が空の場合はエラーを投げる
+  if (!result || result.length === 0) {
+    throw new Error(`担当者ID ${tanto_id} に対応する担当者が見つかりません。`);
   }
-  return String(result[0]);
+  // 結果の最初の行から担当者名を取得
+  const tantoName = String(result[0]?.f?.[0]?.v); // f[0]は担当者名のカラム
+  if (!tantoName) {
+    throw new Error(
+      `担当者ID ${tanto_id} に対応する担当者名が見つかりません。`
+    );
+  }
+  return tantoName;
 }
 
 export function openLink(id: string) {
@@ -93,4 +102,52 @@ export function insertMitsumori(
   };
   // BigQueryにデータを挿入
   insertBQ(PROJECT_CONSTANTS.BQ_TABLE_OVERVIEW, values);
+}
+
+// BigQueryから検索条件を入れて見積一覧情報を取得する関数
+export function getMitsumoriList(
+  tanto_id: string,
+  customer: string,
+  kenmei: string
+): GoogleAppsScript.BigQuery.Schema.TableRow[] {
+  // セレクト句を定義
+  const selectClause = `
+    SELECT
+      spread_id,
+      spread_name,
+      tanto_id,
+      customer,
+      customer_tanto,
+      kenmei,
+      update_datetime,
+      total_sum,
+      delivery_date,
+      state,
+      created_at
+  `;
+
+  // 検索条件を組み立てる
+  const whereConditions: string[] = [];
+
+  // 担当者ID
+  if (tanto_id) {
+    whereConditions.push(`tanto_id = '${tanto_id}'`);
+  }
+  // 顧客名
+  if (customer) {
+    whereConditions.push(`customer LIKE '%${customer}%'`);
+  }
+  // 件名
+  if (kenmei) {
+    whereConditions.push(`kenmei LIKE '%${kenmei}%'`);
+  }
+  const whereClause = whereConditions.length
+    ? `WHERE ${whereConditions.join(' AND ')}`
+    : '';
+  const result = getRowBQ(
+    PROJECT_CONSTANTS.BQ_TABLE_OVERVIEW,
+    selectClause,
+    whereClause
+  );
+  return result || [];
 }

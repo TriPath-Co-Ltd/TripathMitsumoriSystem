@@ -30,6 +30,7 @@
  */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { create } from './button/create';
+import { search } from './button/search';
 
 /*
  * ダミー関数
@@ -37,4 +38,5 @@ import { create } from './button/create';
  */
 function dumy() {
   create();
+  search();
 }

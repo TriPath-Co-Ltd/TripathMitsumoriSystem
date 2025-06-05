@@ -1,17 +1,20 @@
-import { PROJECT_CONSTANTS } from "./project_constants";
+import { PROJECT_CONSTANTS } from './project_constants';
 /*
-  * BigQueryから指定されたテーブルの行を取得する関数
-  * @param {string} tableName - 取得するテーブル名
-  * @param {string} where - WHERE句の条件
-  * @returns {object[]} - 取得した行の配列
-  */
-export function getRowBQ(tableName: string, select: String ,where: string) {
+ * BigQueryから指定されたテーブルの行を取得する関数
+ * @param {string} tableName - 取得するテーブル名
+ * @param {string} where - WHERE句の条件
+ * @returns {object[]} - 取得した行の配列
+ */
+export function getRowBQ(
+  tableName: string,
+  select_cols: string[],
+  where: string
+) {
   const query = `
-        ${select}
+        SELECT ${select_cols.join(', ') || '*'}
         FROM \`${PROJECT_CONSTANTS.BQ_PROJECT_ID}.${PROJECT_CONSTANTS.BQ_DATABASE_ID}.${tableName}\`
         ${where}
     `;
- 
   const queryResults = BQquery(query);
   return queryResults.rows;
 }
@@ -84,7 +87,7 @@ export function updateBQ(
   BQquery(query);
 }
 
-function BQquery( 
+function BQquery(
   query: string
 ): GoogleAppsScript.BigQuery.Schema.QueryResponse {
   if (!BigQuery || !BigQuery.Jobs) {

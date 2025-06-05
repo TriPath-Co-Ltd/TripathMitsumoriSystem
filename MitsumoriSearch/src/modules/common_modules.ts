@@ -18,7 +18,7 @@ import { CONFIG_SHEET_NAME } from '../constans/sheet_constants';
 import { getRowBQ, insertBQ } from '../../../common_src/bigquery';
 // eslint-disable-next-line n/no-unpublished-import
 import { PROJECT_CONSTANTS } from '../../../common_src/project_constants';
-
+import { MitsumoriOverview } from '../../../common_types/mitsumori_overview';
 /**
  * 設定シートから指定されたIDの値を取得する関数
  * @param {string} id - 取得したい設定のID
@@ -57,7 +57,7 @@ export function getConfigSheet(id: string) {
 export function getTantoNameByBQ(tanto_id: string): string {
   const result = getRowBQ(
     PROJECT_CONSTANTS.BQ_TABLE_TANTO,
-    `SELECT tanto_name`,
+    ['tanto_name'],
     `WHERE tanto_id = '${tanto_id}'`
   );
   // 結果が空の場合はエラーを投げる
@@ -109,23 +109,7 @@ export function getMitsumoriList(
   tanto_id: string,
   customer: string,
   kenmei: string
-): GoogleAppsScript.BigQuery.Schema.TableRow[] {
-  // セレクト句を定義
-  const selectClause = `
-    SELECT
-      spread_id,
-      spread_name,
-      tanto_id,
-      customer,
-      customer_tanto,
-      kenmei,
-      update_datetime,
-      total_sum,
-      delivery_date,
-      state,
-      created_at
-  `;
-
+): MitsumoriOverview[] {
   // 検索条件を組み立てる
   const whereConditions: string[] = [];
 
@@ -144,10 +128,16 @@ export function getMitsumoriList(
   const whereClause = whereConditions.length
     ? `WHERE ${whereConditions.join(' AND ')}`
     : '';
+
+  // BigQueryからデータを取得
   const result = getRowBQ(
     PROJECT_CONSTANTS.BQ_TABLE_OVERVIEW,
-    selectClause,
+    MitsumoriOverview.toBigQuerySelectArray(),
     whereClause
   );
-  return result || [];
+  // BigQueryの結果をMitsumoriOverviewの形式に変換
+  if (!result || result.length === 0) {
+    return []; // 結果がない場合は空の配列を返す
+  }
+  return result.map(row => MitsumoriOverview.fromBigQueryRow(row));
 }

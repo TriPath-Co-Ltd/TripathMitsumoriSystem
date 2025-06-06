@@ -18,6 +18,7 @@ import { CONFIG_SHEET_NAME } from '../constans/sheet_constants';
 import { getRowBQ, insertBQ } from '../../../common_src/bigquery';
 // eslint-disable-next-line n/no-unpublished-import
 import { PROJECT_CONSTANTS } from '../../../common_src/project_constants';
+// eslint-disable-next-line n/no-unpublished-import
 import { MitsumoriOverview } from '../../../common_types/mitsumori_overview';
 /**
  * 設定シートから指定されたIDの値を取得する関数

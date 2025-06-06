@@ -1,3 +1,5 @@
+import { EIGYOSHO, MITSUMORI_STATUS } from './as_const';
+
 /*
  *見積の概要を表すクラス
  *
@@ -15,6 +17,8 @@ export class MitsumoriOverview {
   public readonly delivery_date: string;
   public readonly created_at: string;
   public readonly update_datetime: string;
+  public readonly mitsumoiri_status: string;
+  public readonly eigyosho: string;
   // コンストラクタ
   // BigQueryのテーブル行形式のデータを受け取り、MitsumoriOverviewのインスタンスを初期化する。
   constructor(data: GoogleAppsScript.BigQuery.Schema.TableRow) {
@@ -32,12 +36,16 @@ export class MitsumoriOverview {
     this.total_sum = data.f[7].v as unknown as number;
     this.delivery_date = data.f[8].v as unknown as string;
     this.created_at = data.f[9].v as unknown as string;
+    this.mitsumoiri_status = data.f[10].v as unknown as string;
+    this.eigyosho = data.f[11].v as unknown as string;
   }
   // 検索シートの行形式に変換するメソッド
   // この配列順が検索シートの列順となる。
   toSearchSheetRow(): string[] {
     return [
       this.toHyperlinkFormula(),
+      this.mitsumoiri_status,
+      this.eigyosho,
       this.spread_name,
       this.tanto_id,
       this.customer,
@@ -108,5 +116,8 @@ export class MitsumoriOverview {
   // Method to convert the object to a Google Sheets total sum format
   toTotalSumFormat(): string {
     return `=IF(${this.total_sum} = 0, "未設定", ${this.total_sum})`;
+  }
+  toEigyoshoFormat(): string {
+    return `=IF("${this.eigyosho}" = "", "未設定", "${this.eigyosho}")`;
   }
 }

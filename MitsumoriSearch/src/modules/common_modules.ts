@@ -105,7 +105,7 @@ export function insertMitsumori(
   insertBQ(PROJECT_CONSTANTS.BQ_TABLE_OVERVIEW, values);
 }
 
-// BigQueryから検索条件を入れて見積一覧情報を取得する関数
+// BigQueryから検索条件を入れてMitsumoriOverviewクラスのリストを取得する関数
 export function getMitsumoriList(
   tanto_id: string,
   customer: string,
@@ -140,5 +140,5 @@ export function getMitsumoriList(
   if (!result || result.length === 0) {
     return []; // 結果がない場合は空の配列を返す
   }
-  return result.map(row => MitsumoriOverview.fromBigQueryRow(row));
+  return result.map(row => new MitsumoriOverview(row));
 }

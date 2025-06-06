@@ -5,128 +5,56 @@
  *このクラスは、Google SheetsおよびBigQueryのGoogle Apps Scriptで使用するために設計されています。
  */
 export class MitsumoriOverview {
-  private spread_id: string;
-  private spread_name: string;
-  private tanto_id: string;
-  private customer: string;
-  private customer_tanto: string;
-  private kenmei: string;
-  private total_sum: number;
-  private delivery_date: string;
-  private state: string;
-  private created_at: string;
-  private update_datetime: string;
-  constructor(
-    spread_id: string,
-    spread_name: string,
-    tanto_id: string,
-    customer: string,
-    customer_tanto: string,
-    kenmei: string,
-    total_sum: number,
-    delivery_date: string,
-    state: string,
-    created_at: string,
-    update_datetime: string
-  ) {
-    this.spread_id = spread_id;
-    this.spread_name = spread_name;
-    this.tanto_id = tanto_id;
-    this.customer = customer;
-    this.customer_tanto = customer_tanto;
-    this.kenmei = kenmei;
-    this.update_datetime = update_datetime;
-    this.total_sum = total_sum;
-    this.delivery_date = delivery_date;
-    this.state = state;
-    this.created_at = created_at;
-  }
-  //BigQueryのMitumoriOverviewテーブルからこのクラスのインスタンスを作成する静的メソッド
-  static fromBigQueryRow(
-    row: GoogleAppsScript.BigQuery.Schema.TableRow
-  ): MitsumoriOverview {
-    if (!row.f) {
-      throw new Error('row.f is undefined');
+  public readonly spread_id: string;
+  public readonly spread_name: string;
+  public readonly tanto_id: string;
+  public readonly customer: string;
+  public readonly customer_tanto: string;
+  public readonly kenmei: string;
+  public readonly total_sum: number;
+  public readonly delivery_date: string;
+  public readonly created_at: string;
+  public readonly update_datetime: string;
+  // コンストラクタ
+  // BigQueryのテーブル行形式のデータを受け取り、MitsumoriOverviewのインスタンスを初期化する。
+  constructor(data: GoogleAppsScript.BigQuery.Schema.TableRow) {
+    if (!data.f) {
+      throw new Error('BigQueryのデータが正しくありません。');
     }
-    const spread_id = row.f[0].v as unknown as string;
-    const spread_name = row.f[1].v as unknown as string;
-    const tanto_id = row.f[2].v as unknown as string;
-    const customer = row.f[3].v as unknown as string;
-    const customer_tanto = row.f[4].v as unknown as string;
-    const kenmei = row.f[5].v as unknown as string;
-    const update_datetime = row.f[6].v as unknown as string;
-    const total_sum = row.f[7].v as unknown as number;
-    const delivery_date = row.f[8].v as unknown as string;
-    const state = row.f[9].v as unknown as string;
-    const created_at = row.f[10].v as unknown as string;
-    return new MitsumoriOverview(
-      spread_id,
-      spread_name,
-      tanto_id,
-      customer,
-      customer_tanto,
-      kenmei,
-      total_sum,
-      delivery_date,
-      state,
-      created_at,
-      update_datetime
-    );
+
+    this.spread_id = data.f[0].v as unknown as string;
+    this.spread_name = data.f[1].v as unknown as string;
+    this.tanto_id = data.f[2].v as unknown as string;
+    this.customer = data.f[3].v as unknown as string;
+    this.customer_tanto = data.f[4].v as unknown as string;
+    this.kenmei = data.f[5].v as unknown as string;
+    this.update_datetime = data.f[6].v as unknown as string;
+    this.total_sum = data.f[7].v as unknown as number;
+    this.delivery_date = data.f[8].v as unknown as string;
+    this.created_at = data.f[9].v as unknown as string;
   }
-  // Getter methods for each property
-  getSpreadId(): string {
-    return this.spread_id;
-  }
-  getSpreadName(): string {
-    return this.spread_name;
-  }
-  getTantoId(): string {
-    return this.tanto_id;
-  }
-  getCustomer(): string {
-    return this.customer;
-  }
-  getCustomerTanto(): string {
-    return this.customer_tanto;
-  }
-  getKenmei(): string {
-    return this.kenmei;
-  }
-  getUpdateDatetime(): string {
-    return this.update_datetime;
-  }
-  getTotalSum(): number {
-    return this.total_sum;
-  }
-  getDeliveryDate(): string {
-    return this.delivery_date;
-  }
-  getState(): string {
-    return this.state;
-  }
-  getCreatedAt(): string {
-    return this.created_at;
+  // 検索シートの行形式に変換するメソッド
+  // この配列順が検索シートの列順となる。
+  toSearchSheetRow(): string[] {
+    return [
+      this.toHyperlinkFormula(),
+      this.spread_name,
+      this.tanto_id,
+      this.customer,
+      this.customer_tanto,
+      this.kenmei,
+      this.update_datetime,
+      this.toTotalSumFormat(),
+      this.delivery_date,
+      this.created_at,
+    ];
   }
   // BigQueryのselect句に使用するためのカラム名配列を返すメソッド
   static toBigQuerySelectArray(): string[] {
-    return [
-      'spread_id',
-      'spread_name',
-      'tanto_id',
-      'customer',
-      'customer_tanto',
-      'kenmei',
-      'update_datetime',
-      'total_sum',
-      'delivery_date',
-      'state',
-      'created_at',
-    ];
+    return ['*'];
   }
-  toBigQuerySelect(): string {
-    return `spread_id, spread_name, tanto_id, customer, customer_tanto, kenmei, update_datetime, total_sum, delivery_date, state, created_at`;
-  }
-  // BigQueryのテーブル行形式に変換するメソッド
+
+  //BigQueryのテーブル行形式に変換するメソッド
   toBigQueryRow(): GoogleAppsScript.BigQuery.Schema.TableRow {
     const result: GoogleAppsScript.BigQuery.Schema.TableRow = { f: [] };
     if (!result.f) {
@@ -140,23 +68,7 @@ export class MitsumoriOverview {
     }
     return result;
   }
-  // Method to convert the object to a Google Sheets row format
-  toSearchSheetRow(): string[] {
-    return [
-      'checkbox',
-      this.toHyperlinkFormula(),
-      this.spread_name,
-      this.tanto_id,
-      this.customer,
-      this.customer_tanto,
-      this.kenmei,
-      this.update_datetime,
-      this.total_sum.toString(),
-      this.delivery_date,
-      this.state,
-      this.created_at,
-    ];
-  }
+
   // Method to convert the object to a Google Sheets hyperlink formula
   toHyperlinkFormula(): string {
     return `=HYPERLINK("https://docs.google.com/spreadsheets/d/${this.spread_id}", "${this.spread_name}")`;
@@ -172,10 +84,6 @@ export class MitsumoriOverview {
   // Method to convert the object to a Google Sheets date format for delivery date
   toDeliveryDateFormat(): string {
     return `=DATE(${this.delivery_date.slice(0, 4)}, ${this.delivery_date.slice(5, 7)}, ${this.delivery_date.slice(8, 10)})`;
-  }
-  // Method to convert the object to a Google Sheets state format
-  toStateFormat(): string {
-    return `=IF("${this.state}" = "完了", "✅", "❌")`;
   }
   // Method to convert the object to a Google Sheets created at format
   toCreatedAtFormat(): string {
